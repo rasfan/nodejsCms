@@ -3,7 +3,7 @@ const passport = require('passport');
 
 class registerController extends controller {
     showRegsitrationForm(req, res) {
-        res.render('auth/register', { messages: req.flash('errors') });
+        res.render('auth/register', { errors: req.flash('errors') });
     }
 
     registerProccess(req, res, next) {
