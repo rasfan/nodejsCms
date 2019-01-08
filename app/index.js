@@ -26,13 +26,15 @@ module.exports = class Application {
 
     setMongoConnection() {
         mongoose.Promise = global.Promise;
-        mongoose.connect(
-            'mongodb://localhost/nodejscms',
-            { useNewUrlParser: true }
-        );
+        mongoose.connect('mongodb://localhost/nodejscms');
     }
 
+    /**
+     * Express Config
+     */
     setConfig() {
+        require('app/passport/passport-local');
+
         app.use(express.static('public'));
         app.set('view engine', 'ejs');
         app.set('views', path.resolve('./resource/views'));
@@ -52,6 +54,8 @@ module.exports = class Application {
         );
         app.use(cookieParser('mysecretkey'));
         app.use(flash());
+        app.use(passport.initialize());
+        app.use(passport.session());
     }
 
     setRouters() {
