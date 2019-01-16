@@ -21,7 +21,6 @@ passport.use(
             passReqToCallback: true
         },
         (req, email, password, done) => {
-            console.log(email, password);
             User.findOne({ email: email }, (err, user) => {
                 if (err) return done(err);
                 if (user)
@@ -42,7 +41,7 @@ passport.use(
                         return done(
                             err,
                             false,
-                            req.flash('errors', 'Fail! try again')
+                            req.flash('errors', 'Please try again')
                         );
                     done(null, newUser);
                 });
@@ -67,7 +66,7 @@ passport.use(
                     return done(
                         null,
                         false,
-                        req.flash('errors', 'اطلاعات وارد شده مطابقت ندارد')
+                        req.flash('errors', 'The infoes are not matched')
                     );
                 }
 

@@ -3,46 +3,28 @@ const passport = require('passport');
 
 class registerController extends controller {
     showRegsitrationForm(req, res) {
-        res.render('auth/register', { errors: req.flash('errors') });
-    }
-
-    registerProccess(req, res, next) {
-        this.validationData(req)
-            .then(result => {
-                if (result) this.register(req, res, next);
-                else res.redirect('/register');
-            })
-            .catch(err => console.log(er));
-    }
-
-    validationData(req) {
-        req.checkBody('name', 'Name cant be less than 5 char').isLength({
-            min: 5
+        const title = 'Register';
+        res.render('home/auth/register', {
+            errors: req.flash('errors'),
+            recaptcha: this.recaptcha.render(),
+            title
         });
-        req.checkBody('email', 'Email is not valid').isEmail();
-        req.checkBody('password', 'Password cant be less than 8 char').isLength(
-            { min: 8 }
-        );
+    }
 
-        return req
-            .getValidationResult()
-            .then(result => {
-                const errors = result.array();
-                const messages = [];
-                errors.forEach(err => messages.push(err.msg));
+    async registerProccess(req, res, next) {
+        // await this.recaptchaValidation(req, res);
+        let result = await this.validationData(req);
+        if (result) {
+            return this.register(req, res, next);
+        }
 
-                if (errors.length == 0) return true;
-
-                req.flash('errors', messages);
-                return false;
-            })
-            .catch(err => console.log(err));
+        return res.redirect('/auth/register');
     }
 
     register(req, res, next) {
         passport.authenticate('local.register', {
             successRedirect: '/',
-            failureRedirect: '/register',
+            failureRedirect: '/auth/register',
             failureFlash: true
         })(req, res, next);
     }
