@@ -3,6 +3,7 @@ const passport = require('passport');
 const PasswordReset = require('app/models/password-reset');
 const User = require('app/models/user');
 const uniqueString = require('unique-string');
+const mail = require('./../../../mail');
 
 class forgotPasswordController extends controller {
     showForgotPassword(req, res) {
@@ -38,7 +39,26 @@ class forgotPasswordController extends controller {
 
         await newPasswordReset.save();
 
+        let mailOptions = {
+            from: '"nodejs cms" <r.sahafamin@gmail.com>', // sender address
+            to: `${newPasswordReset.email}`, // list of receivers
+            subject: 'Reset password  ', // Subject line
+            html: `
+                <h2>Reset password  </h2>
+                <p>Click</p>
+                <a href="http://localhost:3000/auth/password/reset/${
+                    newPasswordReset.token
+                }">Reset </a>
+            ` // html body
+        };
         // send Mail
+        mail.sendMail(mailOptions, (err, info) => {
+            if (err) return console.log(err);
+
+            console.log('Message Sent : %s', info.messageId);
+
+            return res.redirect('/');
+        });
 
         res.redirect('/');
     }
